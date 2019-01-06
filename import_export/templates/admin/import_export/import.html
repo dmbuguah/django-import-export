@@ -70,7 +70,6 @@
             <li>
               {% trans "Line number" %}: {{ line }} - {{ error.error }}
               <div><code>{{ error.row.values|join:", " }}</code></div>
-              <div class="traceback">{{ error.traceback|linebreaks }}</div>
             </li>
           {% endfor %}
         {% endfor %}
