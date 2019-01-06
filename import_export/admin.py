@@ -295,7 +295,7 @@ class ImportMixin(ImportExportMixinBase):
                 result = resource.get_result_class()()
                 result.append_base_error(
                     resource.get_error_result_class()(
-                        'Kindly ensure the file extensin macthes the file format selected.'))
+                        'An error occured while trying to read file.'))
 
             context['result'] = result
 
