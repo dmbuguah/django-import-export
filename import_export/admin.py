@@ -169,6 +169,24 @@ class ImportMixin(ImportExportMixinBase):
             if not input_format.is_binary() and self.from_encoding:
                 data = force_text(data, self.from_encoding)
             dataset = input_format.create_dataset(data)
+            resource = self.get_import_resource_class()(**self.get_import_resource_kwargs(request, *args, **kwargs))
+            try:
+                result = self.process_dataset(dataset, confirm_form, request, *args, **kwargs)
+            except Exception as e:
+                result = resource.get_result_class()()
+                result.append_base_error(resource.get_error_result_class()('Invalid file or format!'))
+                context = self.get_import_context_data()
+                if django.VERSION >= (1, 8, 0):
+                    context.update(self.admin_site.each_context(request))
+                elif django.VERSION >= (1, 7, 0):
+                    context.update(self.admin_site.each_context())
+
+                context['form'] = confirm_form
+                url = reverse('admin:%s_%s_changelist' % self.get_model_info(),current_app=self.admin_site.name)
+                url = url+ 'import/'
+                messages.error(request, e.args[1])
+                post_import.send(sender=None, model=self.model)
+                return HttpResponseRedirect(url)
 
             result = self.process_dataset(dataset, confirm_form, request, *args, **kwargs)
 
