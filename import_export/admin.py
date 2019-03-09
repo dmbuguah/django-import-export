@@ -187,9 +187,6 @@ class ImportMixin(ImportExportMixinBase):
                 messages.error(request, e.args[1])
                 post_import.send(sender=None, model=self.model)
                 return HttpResponseRedirect(url)
-
-            result = self.process_dataset(dataset, confirm_form, request, *args, **kwargs)
-
             tmp_storage.remove()
 
             return self.process_result(result, request)
